@@ -25,6 +25,8 @@ export const serverEnv = {
  */
 export const clientSchema = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string(),
+  NEXT_PUBLIC_INFURA_ID: z.string(),
+  NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: z.string(),
 });
 
 /**
@@ -35,4 +37,7 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+  NEXT_PUBLIC_INFURA_ID: process.env.NEXT_PUBLIC_INFURA_ID,
+  NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID:
+    process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
 };
