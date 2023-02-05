@@ -8,14 +8,14 @@ import {
   useAccount,
   useDisconnect,
   useNetwork,
-  usePrepareSendTransaction,
-  useSendTransaction,
-  useWaitForTransaction,
+  useContractWrite,
+  usePrepareContractWrite,
+  // useWaitForTransaction,
 } from "wagmi";
-import { utils } from "ethers";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import { addresses } from "../utils/addresses";
+import { abi } from "../utils/abi";
 
 const Home: NextPage = () => {
   const { chain } = useNetwork();
@@ -25,6 +25,8 @@ const Home: NextPage = () => {
   const [qty, setQty] = useState(1);
   const [amt, setAmt] = useState(5.1);
   const [isAL, setIsAL] = useState(false);
+  const [proof, setProof] = useState<string[] | null>(null);
+  const [txError, setTxError] = useState("");
 
   useEffect(() => {
     if (qty > 10) {
@@ -45,18 +47,22 @@ const Home: NextPage = () => {
       const proof = tree.getHexProof(hashedAddress);
       const v = tree.verify(proof, hashedAddress, root);
       setIsAL(v);
+      setProof(proof);
     }
   }, [address]);
-
-  const { config } = usePrepareSendTransaction({
-    request: {
-      to: address as string,
-      value: amt ? utils.parseEther(`${amt}`) : undefined,
-    },
+  const args = [address, qty, proof];
+  const { config } = usePrepareContractWrite({
+    address: "0x48d4CD62A44F7f72322dad056C4Cb357C7E8cA37",
+    abi,
+    functionName: "allowlistMint",
+    args: args,
+    chainId: 137,
   });
-  const { data, sendTransaction } = useSendTransaction(config);
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: data?.hash,
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(error) {
+      setTxError(error.toString());
+    },
   });
 
   return (
@@ -136,8 +142,8 @@ const Home: NextPage = () => {
                   </div>
                   {isAL ? (
                     <button
-                      disabled={!sendTransaction || !address || isLoading}
-                      onClick={() => sendTransaction && sendTransaction()}
+                      disabled={!write || !address || isLoading}
+                      onClick={() => write?.()}
                       className="transform rounded bg-gradient-to-r from-purple-800 to-green-500 py-2 px-4 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:from-pink-500 hover:to-green-500 focus:ring"
                     >
                       {isLoading ? "Minting..." : "Mint"}
@@ -145,6 +151,7 @@ const Home: NextPage = () => {
                   ) : (
                     <p>Not on allowlist {address}</p>
                   )}
+                  {txError ? <p>{txError}</p> : null}
                   <div className="mt-6 text-right">
                     <a
                       href="#"
