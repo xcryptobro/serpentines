@@ -12,10 +12,12 @@ import {
   usePrepareContractWrite,
   // useWaitForTransaction,
 } from "wagmi";
+import { polygon } from "wagmi/chains";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 import { addresses } from "../utils/addresses";
 import { abi } from "../utils/abi";
+import { utils } from "ethers";
 
 const Home: NextPage = () => {
   const { chain } = useNetwork();
@@ -56,7 +58,11 @@ const Home: NextPage = () => {
     abi,
     functionName: "allowlistMint",
     args: args,
-    chainId: 137,
+    chainId: polygon.id,
+    overrides: {
+      from: address,
+      value: utils.parseEther(`${amt}`),
+    },
   });
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
