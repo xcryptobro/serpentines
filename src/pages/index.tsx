@@ -227,7 +227,7 @@ const Home: NextPage = () => {
           >
             Website
           </Link>
-          .
+          . <Link href="/bridge">Need to bridge MATIC to Polygon Network?</Link>
         </div>
       </main>
     </>
