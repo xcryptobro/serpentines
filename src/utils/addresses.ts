@@ -79,4 +79,5 @@ export const addresses = [
   "0x71B3BFfc9B9D74F56F6a7e14401e06eB1a3a9b14",
   "0xc5E49AC5a5D11c8ca65d27309Aaf85d8CE8F8a4A",
   "0x0b2b8d00120c53fcc262d7b9315b0b3ded8ba039",
+  "0xde9E34c86e814b9A197E0ca7cB09C4facC73fBf0",
 ];
