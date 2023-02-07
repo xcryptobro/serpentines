@@ -138,7 +138,9 @@ const Home: NextPage = () => {
                       min={1}
                       max={10}
                       value={qty}
-                      onChange={(e) => setQty(parseInt(e.target.value))}
+                      onChange={(e) => {
+                        setQty(parseInt(e.target.value) || 1);
+                      }}
                     />
                   </div>
                   <div>
