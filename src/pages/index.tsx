@@ -18,6 +18,9 @@ import keccak256 from "keccak256";
 import { addresses } from "../utils/addresses";
 import { abi } from "../utils/abi";
 import { utils } from "ethers";
+import logo from "../../public/logo.png";
+
+const isPublic = true;
 
 const Home: NextPage = () => {
   const { chain } = useNetwork();
@@ -52,18 +55,19 @@ const Home: NextPage = () => {
       setProof(proof);
     }
   }, [address]);
-  const args = [address, qty, proof];
+
   const { config } = usePrepareContractWrite({
     address: "0x48d4CD62A44F7f72322dad056C4Cb357C7E8cA37",
     abi,
-    functionName: "allowlistMint",
-    args: args,
+    functionName: isPublic ? "mint" : "allowlistMint",
+    args: isPublic ? [address, qty] : [address, qty, proof],
     chainId: polygon.id,
     overrides: {
       from: address,
       value: utils.parseEther(`${amt}`),
     },
   });
+
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
     onError(error) {
@@ -84,12 +88,11 @@ const Home: NextPage = () => {
       <main className="min-h-screen bg-gradient-to-b  from-[#7b3fe4] to-[#15162c] bg-cover bg-fixed leading-normal tracking-normal text-indigo-400">
         <div className="container mx-auto">
           <div className="flex w-full items-center justify-between">
-            <p className="sm:-text-2xl mt-4 flex items-center text-2xl font-bold text-indigo-400 no-underline hover:no-underline lg:text-6xl">
-              <span className="bg-gradient-to-r from-pink-500  to-white bg-clip-text text-transparent">
-                Serpentines
-              </span>
-            </p>
-
+            <Image
+              src={logo}
+              alt="Serpentines"
+              className="max-w-[300px] pt-2"
+            />
             <div className="flex w-1/2 content-center justify-end">
               <Link
                 className="hover:text-underline inline-block h-10 transform p-2 text-center text-blue-300 no-underline duration-300 ease-in-out hover:scale-125 hover:text-pink-500 md:h-auto md:p-4"
@@ -113,13 +116,18 @@ const Home: NextPage = () => {
             </div>
           </div>
         </div>
-        <div className="container mx-auto flex flex-col flex-wrap items-center pt-12 md:flex-row md:pt-36">
-          <div className="flex w-full flex-col justify-center overflow-y-hidden lg:items-start xl:w-2/5">
-            <h1 className="my-4 text-center text-3xl font-bold leading-tight text-white opacity-75 md:text-left md:text-5xl">
-              Polygon Blockchain
-            </h1>
+        <div className="container mx-auto flex flex-col flex-wrap items-center pt-12 md:flex-row">
+          <div className="flex w-full flex-col justify-center overflow-y-hidden xl:w-2/5">
+            <p className="flex items-center text-3xl font-bold text-indigo-400 no-underline hover:no-underline">
+              <span className="bg-gradient-to-r from-pink-500  to-white bg-clip-text text-transparent">
+                Serpentines on Polygon Blockchain
+              </span>
+            </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left md:text-2xl">
-              Serpentines now minting on Polygon for addresses on the allowlist.
+              First 1K drop minting now at 5.1 MATIC ☀️🐦
+            </p>
+            <p className="mb-8 text-center text-base leading-normal md:text-left">
+              * Future drops subject to change. Full collection size 10K.
             </p>
             <div className="mb-4 w-full rounded-lg bg-gray-900 px-8 pt-6 pb-8 opacity-75 shadow-lg">
               {isConnected && chain?.name === "Polygon" ? (
@@ -148,7 +156,7 @@ const Home: NextPage = () => {
                       Total Price: {amt.toFixed(1)} MATIC
                     </p>
                   </div>
-                  {isAL ? (
+                  {isPublic || isAL ? (
                     <button
                       disabled={!write || !address || isLoading}
                       onClick={() => write?.()}
@@ -232,6 +240,7 @@ const Home: NextPage = () => {
           <Link
             href="https://polygonscan.com/address/0x48d4cd62a44f7f72322dad056c4cb357c7e8ca37#code"
             target="_blank"
+            className="underline"
           >
             Contract
           </Link>
@@ -239,10 +248,15 @@ const Home: NextPage = () => {
           <Link
             href="https://github.com/xcryptobro/serpentines"
             target="_blank"
+            className="underline"
           >
             Website
           </Link>
-          . <Link href="/bridge">Need to bridge MATIC to Polygon Network?</Link>
+          . Need to{" "}
+          <Link href="/bridge" className="underline">
+            bridge to Polygon
+          </Link>
+          ?
         </div>
       </main>
     </>
