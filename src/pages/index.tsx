@@ -20,7 +20,7 @@ import { abi } from "../utils/abi";
 import { utils } from "ethers";
 import logo from "../../public/logo.png";
 
-const isPublic = true;
+const isPublic = false;
 
 const Home: NextPage = () => {
   const { chain } = useNetwork();
@@ -120,11 +120,14 @@ const Home: NextPage = () => {
           <div className="flex w-full flex-col justify-center overflow-y-hidden xl:w-2/5">
             <p className="flex items-center text-3xl font-bold text-indigo-400 no-underline hover:no-underline">
               <span className="bg-gradient-to-r from-pink-500  to-white bg-clip-text text-transparent">
-                Serpentines on Polygon Blockchain
+                Serpentines Season Two
               </span>
             </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left md:text-2xl">
-              First 1K drop minting now at 5.1 MATIC ☀️🐦
+              ✅ Season One Sold Out
+            </p>
+            <p className="mb-8 text-center text-base leading-normal md:text-left md:text-2xl">
+              2K drop minting now at 5.1 MATIC for Season One HODLers 💎🙌
             </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left">
               * Future drops subject to change. Full collection size 10K.
