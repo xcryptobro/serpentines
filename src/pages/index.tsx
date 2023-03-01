@@ -20,7 +20,7 @@ import { abi } from "../utils/abi";
 import { utils } from "ethers";
 import logo from "../../public/logo.png";
 
-const isPublic = false;
+const isPublic = true;
 
 const Home: NextPage = () => {
   const { chain } = useNetwork();
@@ -28,7 +28,7 @@ const Home: NextPage = () => {
   const { address, isConnected } = useAccount();
 
   const [qty, setQty] = useState(1);
-  const [amt, setAmt] = useState(5.1);
+  const [amt, setAmt] = useState(5.51);
   const [isAL, setIsAL] = useState(false);
   const [proof, setProof] = useState<string[] | null>(null);
   const [txError, setTxError] = useState("");
@@ -39,7 +39,7 @@ const Home: NextPage = () => {
     } else if (qty < 1) {
       setQty(1);
     } else {
-      setAmt(qty * 5.1);
+      setAmt(qty * 5.51);
     }
   }, [qty]);
 
@@ -127,7 +127,7 @@ const Home: NextPage = () => {
               ✅ Season One Sold Out
             </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left md:text-2xl">
-              2K drop minting now at 5.1 MATIC for Season One HODLers 💎🙌
+              2K drop minting now at 5.51 MATIC
             </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left">
               * Future drops subject to change. Full collection size 10K.
@@ -156,7 +156,7 @@ const Home: NextPage = () => {
                   </div>
                   <div>
                     <p className="mb-2 block py-2 font-bold text-blue-300">
-                      Total Price: {amt.toFixed(1)} MATIC
+                      Total Price: {amt.toFixed(2)} MATIC
                     </p>
                   </div>
                   {isPublic || isAL ? (
