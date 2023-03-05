@@ -28,7 +28,7 @@ const Home: NextPage = () => {
   const { address, isConnected } = useAccount();
 
   const [qty, setQty] = useState(1);
-  const [amt, setAmt] = useState(5.51);
+  const [amt, setAmt] = useState(10.51);
   const [isAL, setIsAL] = useState(false);
   const [proof, setProof] = useState<string[] | null>(null);
   const [txError, setTxError] = useState("");
@@ -39,7 +39,7 @@ const Home: NextPage = () => {
     } else if (qty < 1) {
       setQty(1);
     } else {
-      setAmt(qty * 5.51);
+      setAmt(qty * 10.51);
     }
   }, [qty]);
 
@@ -127,7 +127,7 @@ const Home: NextPage = () => {
               ✅ Season One Sold Out
             </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left md:text-2xl">
-              2K drop minting now at 5.51 MATIC
+              2K drop minting now at 10.51 MATIC
             </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left">
               * Future drops subject to change. Full collection size 10K.
