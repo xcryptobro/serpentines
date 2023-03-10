@@ -28,7 +28,7 @@ const Home: NextPage = () => {
   const { address, isConnected } = useAccount();
 
   const [qty, setQty] = useState(1);
-  const [amt, setAmt] = useState(10.51);
+  const [amt, setAmt] = useState(20);
   const [isAL, setIsAL] = useState(false);
   const [proof, setProof] = useState<string[] | null>(null);
   const [txError, setTxError] = useState("");
@@ -39,7 +39,7 @@ const Home: NextPage = () => {
     } else if (qty < 1) {
       setQty(1);
     } else {
-      setAmt(qty * 10.51);
+      setAmt(qty * 20);
     }
   }, [qty]);
 
@@ -127,10 +127,10 @@ const Home: NextPage = () => {
               ✅ Season One Sold Out
             </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left md:text-2xl">
-              2K drop minting now at 10.51 MATIC
+              2K drop minting now at 20 MATIC
             </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left">
-              * Future drops subject to change. Full collection size 10K.
+              *pricing subject to change. Full collection size is 10K.
             </p>
             <div className="mb-4 w-full rounded-lg bg-gray-900 px-8 pt-6 pb-8 opacity-75 shadow-lg">
               {isConnected && chain?.name === "Polygon" ? (
@@ -156,7 +156,7 @@ const Home: NextPage = () => {
                   </div>
                   <div>
                     <p className="mb-2 block py-2 font-bold text-blue-300">
-                      Total Price: {amt.toFixed(2)} MATIC
+                      Total Price: {amt.toFixed(0)} MATIC
                     </p>
                   </div>
                   {isPublic || isAL ? (
