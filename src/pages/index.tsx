@@ -8,6 +8,7 @@ import {
   useAccount,
   useDisconnect,
   useNetwork,
+  useContractRead,
   useContractWrite,
   usePrepareContractWrite,
 } from "wagmi";
@@ -20,18 +21,29 @@ import { utils } from "ethers";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
-const isPublic = true;
+const contractAddress = "0x48d4CD62A44F7f72322dad056C4Cb357C7E8cA37";
+const isPublic = false;
 
 const Home: NextPage = () => {
   const { chain } = useNetwork();
   const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
-
   const [qty, setQty] = useState(1);
   const [amt, setAmt] = useState(20);
   const [isAL, setIsAL] = useState(false);
   const [proof, setProof] = useState<string[] | null>(null);
   const [txError, setTxError] = useState("");
+
+  const { data: isPaused } = useContractRead({
+    address: contractAddress,
+    abi,
+    functionName: "paused",
+  });
+  const { data: isAllowlistPaused } = useContractRead({
+    address: contractAddress,
+    abi,
+    functionName: "allowlistPaused",
+  });
 
   useEffect(() => {
     if (qty > 10) {
@@ -57,9 +69,13 @@ const Home: NextPage = () => {
   }, [address]);
 
   const { config } = usePrepareContractWrite({
-    address: "0x48d4CD62A44F7f72322dad056C4Cb357C7E8cA37",
+    address: contractAddress,
     abi,
-    functionName: isPublic ? "mint" : "allowlistMint",
+    functionName: !isPaused
+      ? "mint"
+      : !isAllowlistPaused
+      ? "allowlistMint"
+      : "",
     args: isPublic ? [address, qty] : [address, qty, proof],
     chainId: polygon.id,
     overrides: {
@@ -98,82 +114,90 @@ const Home: NextPage = () => {
               ✅ Season One Sold Out
             </p>
             <p className="mb-8 text-center text-base leading-normal md:text-left md:text-2xl">
-              2K drop minting now at 20 MATIC
+              {!isPaused
+                ? "2K drop minting now at 20 MATIC"
+                : !isAllowlistPaused
+                ? "2K drop minting now at 20 MATIC for allowlist members"
+                : "2K drop minting paused..."}
             </p>
-            <p className="mb-8 text-center text-base leading-normal md:text-left">
+            <p className="mb-8 text-center text-base leading-normal md:text-left md:text-sm">
               *pricing subject to change. Full collection size is 10K.
             </p>
-            <div className="mb-4 w-full rounded-lg bg-gray-900 px-8 pt-6 pb-8 opacity-75 shadow-lg">
-              {isConnected && chain?.name === "Polygon" ? (
-                <>
-                  <div className="p-2">
-                    <label
-                      className="mb-2 block py-2 font-bold text-blue-300"
-                      htmlFor="qty"
-                    >
-                      Quantity (Max 10)
-                    </label>
-                    <input
-                      className="w-sm transform appearance-none rounded border p-3 leading-tight text-gray-700 shadow transition duration-300 ease-in-out hover:scale-105 focus:ring"
-                      id="qty"
-                      type="number"
-                      min={1}
-                      max={10}
-                      value={qty}
-                      onChange={(e) => {
-                        setQty(parseInt(e.target.value) || 1);
-                      }}
+            {!isPaused || !isAllowlistPaused ? (
+              <div className="mb-4 w-full rounded-lg bg-gray-900 px-8 pt-6 pb-8 opacity-75 shadow-lg">
+                {isConnected && chain?.name === "Polygon" ? (
+                  <>
+                    <div className="p-2">
+                      <label
+                        className="mb-2 block py-2 font-bold text-blue-300"
+                        htmlFor="qty"
+                      >
+                        Quantity (Max 10)
+                      </label>
+                      <input
+                        className="w-sm transform appearance-none rounded border p-3 leading-tight text-gray-700 shadow transition duration-300 ease-in-out hover:scale-105 focus:ring"
+                        id="qty"
+                        type="number"
+                        min={1}
+                        max={10}
+                        value={qty}
+                        onChange={(e) => {
+                          setQty(parseInt(e.target.value) || 1);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <p className="mb-2 block py-2 font-bold text-blue-300">
+                        Total Price: {amt.toFixed(0)} MATIC
+                      </p>
+                    </div>
+                    {isPublic || isAL ? (
+                      <button
+                        disabled={!write || !address || isLoading}
+                        onClick={() => write?.()}
+                        className="transform rounded bg-gradient-to-r from-purple-800 to-green-500 py-2 px-4 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:from-pink-500 hover:to-green-500 focus:ring"
+                      >
+                        {isLoading ? "Minting..." : "Mint"}
+                      </button>
+                    ) : (
+                      <p>Not on allowlist {address}</p>
+                    )}
+                    {txError ? <p>{txError}</p> : null}
+                    <div className="mt-6 text-right">
+                      <a
+                        href="#"
+                        onClick={() => disconnect()}
+                        className="transform rounded py-1 px-2 font-thin text-gray-300"
+                      >
+                        Disconnect
+                      </a>
+                    </div>
+                  </>
+                ) : !isConnected ? (
+                  <div className="flex flex-col">
+                    <Web3Button
+                      icon="show"
+                      label="Connect Wallet"
+                      balance="show"
                     />
                   </div>
-                  <div>
-                    <p className="mb-2 block py-2 font-bold text-blue-300">
-                      Total Price: {amt.toFixed(0)} MATIC
-                    </p>
-                  </div>
-                  {isPublic || isAL ? (
-                    <button
-                      disabled={!write || !address || isLoading}
-                      onClick={() => write?.()}
-                      className="transform rounded bg-gradient-to-r from-purple-800 to-green-500 py-2 px-4 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:from-pink-500 hover:to-green-500 focus:ring"
+                ) : chain?.name !== "Polygon" ? (
+                  <Web3NetworkSwitch />
+                ) : null}
+                {isSuccess ? (
+                  <div className="p-4">
+                    <Link
+                      href={`https://polygonscan.com/tx/${
+                        data?.hash as string
+                      }`}
+                      target="_blank"
                     >
-                      {isLoading ? "Minting..." : "Mint"}
-                    </button>
-                  ) : (
-                    <p>Not on allowlist {address}</p>
-                  )}
-                  {txError ? <p>{txError}</p> : null}
-                  <div className="mt-6 text-right">
-                    <a
-                      href="#"
-                      onClick={() => disconnect()}
-                      className="transform rounded py-1 px-2 font-thin text-gray-300"
-                    >
-                      Disconnect
-                    </a>
+                      View transaction
+                    </Link>
                   </div>
-                </>
-              ) : !isConnected ? (
-                <div className="flex flex-col">
-                  <Web3Button
-                    icon="show"
-                    label="Connect Wallet"
-                    balance="show"
-                  />
-                </div>
-              ) : chain?.name !== "Polygon" ? (
-                <Web3NetworkSwitch />
-              ) : null}
-              {isSuccess ? (
-                <div className="p-4">
-                  <Link
-                    href={`https://polygonscan.com/tx/${data?.hash as string}`}
-                    target="_blank"
-                  >
-                    View transaction
-                  </Link>
-                </div>
-              ) : null}
-            </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
           <div className="w-full overflow-hidden p-12 xl:w-3/5">
             <div className="fade-in flex w-full justify-center pb-24 md:justify-start lg:pb-0">
