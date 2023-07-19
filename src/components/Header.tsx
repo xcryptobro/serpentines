@@ -29,7 +29,7 @@ const Header = () => {
 
       <div className="text-right">
         <Link
-          href="https://polygon.magiceden.io/collections/polygon/0x48d4cd62a44f7f72322dad056c4cb357c7e8ca37"
+          href="https://magiceden.io/collections/polygon/serpentines"
           target="_blank"
           className="hover:text-underline inline-block h-10 transform p-2 text-center text-blue-300 no-underline duration-300 ease-in-out hover:scale-125 hover:text-pink-500 md:h-auto md:p-4"
         >
